@@ -1,0 +1,42 @@
+versuib: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: Root
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 60s
+      retries: 20
+      interval: 10s
+
+    networks:
+      - mynetwork
+
+  backend:
+
+    image: 727722eucy058/vishnupriya:tagname
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/project_survey
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      db:
+        condition:service_healthy
+    networks:
+      - mynetwork
+
+  frontend:
+
+    image: 727722eucy058/vishnupriya:tagname
+    ports:
+      - "3000-3000"
+    depends_on:
+      - backend
+    net
